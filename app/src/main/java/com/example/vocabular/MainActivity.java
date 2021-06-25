@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -25,7 +26,7 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
-
+    private String TAG = this.getClass().getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         WebView webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
         Button btnFetch = (Button)findViewById(R.id.downloadBtn);
+
         btnFetch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -42,16 +44,17 @@ public class MainActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     public void run() {
                         try{
-                            String content = getContent("https://stackoverflow.com/");
+                            String content = getContent("https://translate.google.ru/#en/ru/cat");
                             webView.post(new Runnable() {
                                 public void run() {
-                                    webView.loadDataWithBaseURL("https://stackoverflow.com/",content, "text/html", "UTF-8", "https://stackoverflow.com/");
+                                    webView.loadDataWithBaseURL("https://translate.google.ru/#en/ru/cat",content, "text/html", "UTF-8", "https://translate.google.ru/#en/ru/cat");
                                     Toast.makeText(getApplicationContext(), "Данные загружены", Toast.LENGTH_SHORT).show();
                                 }
                             });
                             contentView.post(new Runnable() {
                                 public void run() {
                                     contentView.setText(content);
+                                    Log.d(TAG, content);
                                 }
                             });
                         }
