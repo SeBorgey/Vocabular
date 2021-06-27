@@ -19,7 +19,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+
 import android.os.Bundle;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,16 +59,17 @@ public class MainActivity extends AppCompatActivity {
     final String DIR_SD = "MyFiles";
     final String FILENAME_SD = "fileSD";
     private String TAG = this.getClass().getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 //        TextView contentView = (TextView) findViewById(R.id.content);
 //        WebView webView = (WebView) findViewById(R.id.webView);
 //        webView.getSettings().setJavaScriptEnabled(true);
-        Button btnFetch = (Button)findViewById(R.id.downloadBtn);
-        Button save = (Button)findViewById(R.id.saveButton);
+        Button btnFetch = (Button) findViewById(R.id.downloadBtn);
+        Button save = (Button) findViewById(R.id.saveButton);
         EditText Text1 = (EditText) findViewById(R.id.editTextTextPersonName);
         EditText Text2 = (EditText) findViewById(R.id.editTextTextPersonName2);
         save.setOnClickListener(new View.OnClickListener() {
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                         // создаем объект файлового объекта CSVWriter в качестве параметра
                         CSVWriter writer = new CSVWriter(outputfile);
                         // добавляем заголовок в csv
-                        String[] header = {"Eng", "Ru", "Learn"};
+                        String[] header = {"Eng", "Ru", "Ln"};
                         writer.writeNext(header);
                         // добавить данные в csv
                         String[] data1 = {word1, word2, "0"};
@@ -102,16 +105,16 @@ public class MainActivity extends AppCompatActivity {
                         // TODO автоматически сгенерированный блок catch
                         e.printStackTrace();
                     }
-                }
-                else{
-                    try{
+                } else {
+                    try {
                         CSVWriter writer = new CSVWriter(new FileWriter(file, true));
-                        String [] record = {word1, word2, "0"};
+                        String[] record = {word1, word2, "0"};
                         writer.writeNext(record);
                         writer.close();
                         Toast toast = Toast.makeText(getApplicationContext(),
-                        "Сохранено", Toast.LENGTH_SHORT);
-                    } catch (IOException e){
+                                "Сохранено", Toast.LENGTH_SHORT);
+                        toast.show();
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
@@ -121,11 +124,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String word = Text1.getText().toString();
-                String word_url = "https://www.multitran.com/m.exe?l1=1&l2=2&s="+word;
+                String word_url = "https://www.multitran.com/m.exe?l1=1&l2=2&s=" + word;
 //                contentView.setText("Загрузка...");
                 new Thread(new Runnable() {
                     public void run() {
-                        try{
+                        try {
                             String content = getContent(word_url);
 //                            webView.post(new Runnable() {
 //                                public void run() {
@@ -147,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
 //                                    String[] linkInnerH = {};
                                     List<String> listA = new ArrayList<String>();
 
-                                    int i=0;
+                                    int i = 0;
                                     for (Element links : link.select("a[href$=1]")) {
 //                                        linkInnerH = linkInnerH + links.text()+"\n";
                                         listA.add(links.html());
@@ -155,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                                         // get the value from href attribute
 //                                        System.out.println("\nLink : " + links.attr("href"));
 //                                        System.out.println("Text : " + links.text());
-                                        if (i>10) break;
+                                        if (i > 10) break;
                                         i++;
                                     }
                                     String[] linkInnerH = listA.toArray(new String[0]);
@@ -182,8 +185,7 @@ public class MainActivity extends AppCompatActivity {
 //                                    Log.d(TAG, content);
                                 }
                             });
-                        }
-                        catch (IOException ex){
+                        } catch (IOException ex) {
                             runOnUiThread(new Runnable() {
                                 public void run() {
 //                                    contentView.setText("Ошибка: " + ex.getMessage());
@@ -196,26 +198,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     private String getContent(String path) throws IOException {
-        BufferedReader reader=null;
+        BufferedReader reader = null;
         InputStream stream = null;
         HttpsURLConnection connection = null;
         try {
-            URL url=new URL(path);
-            connection =(HttpsURLConnection)url.openConnection();
+            URL url = new URL(path);
+            connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setReadTimeout(10000);
             connection.connect();
             stream = connection.getInputStream();
-            reader= new BufferedReader(new InputStreamReader(stream));
-            StringBuilder buf=new StringBuilder();
+            reader = new BufferedReader(new InputStreamReader(stream));
+            StringBuilder buf = new StringBuilder();
             String line;
-            while ((line=reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 buf.append(line).append("\n");
             }
-            return(buf.toString());
-        }
-        finally {
+            return (buf.toString());
+        } finally {
             if (reader != null) {
                 reader.close();
             }
@@ -227,36 +229,37 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    public  boolean isStoragePermissionGranted() {
+
+    public boolean isStoragePermissionGranted() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
-                Log.v(TAG,"Permission is granted");
+                Log.v(TAG, "Permission is granted");
                 return true;
             } else {
 
-                Log.v(TAG,"Permission is revoked");
+                Log.v(TAG, "Permission is revoked");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                 return false;
             }
-        }
-        else { //permission is automatically granted on sdk<23 upon installation
-            Log.v(TAG,"Permission is granted");
+        } else { //permission is automatically granted on sdk<23 upon installation
+            Log.v(TAG, "Permission is granted");
             return true;
         }
     }
+
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add("Учить");
         menu.add("Мой словарь");
         return super.onCreateOptionsMenu(menu);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getTitle() == "Учить"){
+        if (item.getTitle() == "Учить") {
             Intent intent = new Intent(this, Learn.class);
             startActivity(intent);
-        }
-        else if (item.getTitle() == "Мой словарь"){
+        } else if (item.getTitle() == "Мой словарь") {
             Intent intent = new Intent(this, Vocabulary.class);
             startActivity(intent);
         }
