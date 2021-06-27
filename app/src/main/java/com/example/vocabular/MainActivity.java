@@ -1,6 +1,7 @@
 package com.example.vocabular;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
@@ -20,6 +21,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.AdapterView;
@@ -241,5 +244,22 @@ public class MainActivity extends AppCompatActivity {
             Log.v(TAG,"Permission is granted");
             return true;
         }
+    }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add("Учить");
+        menu.add("Мой словарь");
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getTitle() == "Учить"){
+            Intent intent = new Intent(this, Learn.class);
+            startActivity(intent);
+        }
+        else if (item.getTitle() == "Мой словарь"){
+            Intent intent = new Intent(this, Vocabulary.class);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
