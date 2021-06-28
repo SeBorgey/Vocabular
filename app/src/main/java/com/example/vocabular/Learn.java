@@ -123,7 +123,7 @@ public class Learn extends AppCompatActivity {
         for (int i = 0; i < 11; i++) {
             if (ret.size() < 20) {
                 for (String[] row : arr) {
-                    if (!row[2].equals("Learn")) {
+                    if (!row[2].equals("Ln")) {
 //                        System.out.println(row[2]);
                         int val = Integer.parseInt(row[2]);
 //                        System.out.println(val);
@@ -150,7 +150,7 @@ public class Learn extends AppCompatActivity {
 //            System.out.println(s[0]);
 //            System.out.println(s[1]);
 //            System.out.println(s[2]);
-            if (!s[2].equals("Learn")) {
+            if (!s[2].equals("Ln")) {
 //                System.out.println(s[2]);
                 int val = Integer.parseInt(s[2]);
                 if (val < 10) {

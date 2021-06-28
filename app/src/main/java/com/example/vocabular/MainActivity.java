@@ -1,6 +1,8 @@
 package com.example.vocabular;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -26,6 +28,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -75,9 +78,13 @@ public class MainActivity extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager imm =  (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(Text1, InputMethodManager.SHOW_IMPLICIT);
 //                isStoragePermissionGranted();
                 String word1 = Text1.getText().toString();
                 String word2 = Text2.getText().toString();
+                Text1.setText("");
+                Text2.setText("");
 //                File sdPath = Environment.getExternalStorageDirectory();
 //                sdPath = new File(sdPath.getAbsolutePath() + "/" + "Vocabular");
 //                if (!sdPath.mkdirs()) Log.d(TAG, "НЕ СОЗДАНО");
@@ -123,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
         btnFetch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                hideKeyboard(MainActivity.this);
                 String word = Text1.getText().toString();
                 String word_url = "https://www.multitran.com/m.exe?l1=1&l2=2&s=" + word;
 //                contentView.setText("Загрузка...");
@@ -158,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                                         // get the value from href attribute
 //                                        System.out.println("\nLink : " + links.attr("href"));
 //                                        System.out.println("Text : " + links.text());
-                                        if (i > 10) break;
+                                        if (i > 20) break;
                                         i++;
                                     }
                                     String[] linkInnerH = listA.toArray(new String[0]);
@@ -264,5 +272,16 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
