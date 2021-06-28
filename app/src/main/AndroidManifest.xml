@@ -12,7 +12,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Vocabular">
-        <activity android:name=".Instruction"></activity>
+        <activity
+            android:name=".Instruction"
+            android:label="Инструкция"/>
         <activity
             android:name=".Vocabulary_new"
             android:label="Мой словарь" />
