@@ -131,8 +131,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 hideKeyboard(MainActivity.this);
-                String word = Text1.getText().toString();
-                String word_url = "https://www.multitran.com/m.exe?l1=1&l2=2&s=" + word;
+                String word1 = Text1.getText().toString();
+                String word2 = Text2.getText().toString();
+                String word_url;
+                boolean L;
+                if (!word1.equals("")){
+                    word_url = "https://www.multitran.com/m.exe?l1=1&l2=2&s=" + word1;
+                    L=true;
+                }
+                else{
+                    word_url = "https://www.multitran.com/m.exe?l1=2&l2=1&s=" + word2;
+                    L=false;
+                }
 //                contentView.setText("Загрузка...");
                 new Thread(new Runnable() {
                     public void run() {
@@ -185,7 +195,10 @@ public class MainActivity extends AppCompatActivity {
                                         public void onItemClick(AdapterView<?> parent, View view,
                                                                 int position, long id) {
                                             String selectedFromList = (String) (lvMain.getItemAtPosition(position));
-                                            Text2.setText(selectedFromList);
+                                            if (L)
+                                                Text2.setText(selectedFromList);
+                                            else
+                                                Text1.setText(selectedFromList);
                                         }
                                     });
 //                                    contentView.setText(linkInnerH);
