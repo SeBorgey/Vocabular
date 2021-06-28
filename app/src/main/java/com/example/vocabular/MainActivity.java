@@ -276,6 +276,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add("Учить");
         menu.add("Мой словарь");
+        menu.add("Инструкция");
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -286,6 +287,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         } else if (item.getTitle() == "Мой словарь") {
             Intent intent = new Intent(this, Vocabulary_new.class);
+            startActivity(intent);
+        } else if (item.getTitle() == "Инструкция") {
+            Intent intent = new Intent(this, Instruction.class);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
