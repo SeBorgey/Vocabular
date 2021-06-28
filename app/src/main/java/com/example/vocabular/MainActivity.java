@@ -1,6 +1,8 @@
 package com.example.vocabular;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -26,6 +28,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -78,6 +81,11 @@ public class MainActivity extends AppCompatActivity {
 //                isStoragePermissionGranted();
                 String word1 = Text1.getText().toString();
                 String word2 = Text2.getText().toString();
+                if ((word1.equals("")) || (word2.equals(""))) return;
+                InputMethodManager imm =  (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(Text1, InputMethodManager.SHOW_IMPLICIT);
+                Text1.setText("");
+                Text2.setText("");
 //                File sdPath = Environment.getExternalStorageDirectory();
 //                sdPath = new File(sdPath.getAbsolutePath() + "/" + "Vocabular");
 //                if (!sdPath.mkdirs()) Log.d(TAG, "НЕ СОЗДАНО");
@@ -91,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
                         // создаем объект файлового объекта CSVWriter в качестве параметра
                         CSVWriter writer = new CSVWriter(outputfile);
                         // добавляем заголовок в csv
-                        String[] header = {"Eng", "Ru", "Ln"};
-                        writer.writeNext(header);
+//                        String[] header = {"Eng", "Ru", "Ln"};
+//                        writer.writeNext(header);
                         // добавить данные в csv
                         String[] data1 = {word1, word2, "0"};
                         writer.writeNext(data1);
@@ -123,8 +131,22 @@ public class MainActivity extends AppCompatActivity {
         btnFetch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String word = Text1.getText().toString();
-                String word_url = "https://www.multitran.com/m.exe?l1=1&l2=2&s=" + word;
+                hideKeyboard(MainActivity.this);
+                String word1 = Text1.getText().toString();
+                String word2 = Text2.getText().toString();
+                String word_url;
+                String filter;
+                boolean L;
+                if (!word1.equals("")){
+                    word_url = "https://www.multitran.com/m.exe?l1=1&l2=2&s=" + word1;
+                    L=true;
+                    filter = "a[href$=1]";
+                }
+                else{
+                    word_url = "https://www.multitran.com/m.exe?l1=2&l2=1&s=" + word2;
+                    L=false;
+                    filter = "a[href$=2]";
+                }
 //                contentView.setText("Загрузка...");
                 new Thread(new Runnable() {
                     public void run() {
@@ -151,14 +173,14 @@ public class MainActivity extends AppCompatActivity {
                                     List<String> listA = new ArrayList<String>();
 
                                     int i = 0;
-                                    for (Element links : link.select("a[href$=1]")) {
+                                    for (Element links : link.select(filter)) {
 //                                        linkInnerH = linkInnerH + links.text()+"\n";
                                         listA.add(links.html());
 //                                        linkInnerH = linkInnerH + links.html()+"\n";
                                         // get the value from href attribute
 //                                        System.out.println("\nLink : " + links.attr("href"));
 //                                        System.out.println("Text : " + links.text());
-                                        if (i > 10) break;
+                                        if (i > 20) break;
                                         i++;
                                     }
                                     String[] linkInnerH = listA.toArray(new String[0]);
@@ -177,7 +199,10 @@ public class MainActivity extends AppCompatActivity {
                                         public void onItemClick(AdapterView<?> parent, View view,
                                                                 int position, long id) {
                                             String selectedFromList = (String) (lvMain.getItemAtPosition(position));
-                                            Text2.setText(selectedFromList);
+                                            if (L)
+                                                Text2.setText(selectedFromList);
+                                            else
+                                                Text1.setText(selectedFromList);
                                         }
                                     });
 //                                    contentView.setText(linkInnerH);
@@ -251,6 +276,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add("Учить");
         menu.add("Мой словарь");
+        menu.add("Инструкция");
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -260,9 +286,23 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, Learn.class);
             startActivity(intent);
         } else if (item.getTitle() == "Мой словарь") {
-            Intent intent = new Intent(this, Vocabulary.class);
+            Intent intent = new Intent(this, Vocabulary_new.class);
+            startActivity(intent);
+        } else if (item.getTitle() == "Инструкция") {
+            Intent intent = new Intent(this, Instruction.class);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
