@@ -6,30 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Environment;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-
-import android.os.Bundle;
-import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -46,6 +32,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -55,12 +43,10 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import static android.view.KeyEvent.KEYCODE_ENTER;
+
 
 public class MainActivity extends AppCompatActivity {
-    final String FILENAME = "file";
-
-    final String DIR_SD = "MyFiles";
-    final String FILENAME_SD = "fileSD";
     private String TAG = this.getClass().getSimpleName();
 
     @Override
@@ -68,161 +54,162 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        TextView contentView = (TextView) findViewById(R.id.content);
-//        WebView webView = (WebView) findViewById(R.id.webView);
-//        webView.getSettings().setJavaScriptEnabled(true);
         Button btnFetch = (Button) findViewById(R.id.downloadBtn);
         Button save = (Button) findViewById(R.id.saveButton);
         EditText Text1 = (EditText) findViewById(R.id.editTextTextPersonName);
         EditText Text2 = (EditText) findViewById(R.id.editTextTextPersonName2);
+        Text1.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    translate("eng");
+                    handled = true;
+                }
+                return handled;
+            }
+        });
+        Text2.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    translate("rus");
+                    handled = true;
+                }
+                return handled;
+            }
+        });
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                isStoragePermissionGranted();
-                String word1 = Text1.getText().toString();
-                String word2 = Text2.getText().toString();
-                if ((word1.equals("")) || (word2.equals(""))) return;
-                InputMethodManager imm =  (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(Text1, InputMethodManager.SHOW_IMPLICIT);
-                Text1.setText("");
-                Text2.setText("");
-//                File sdPath = Environment.getExternalStorageDirectory();
-//                sdPath = new File(sdPath.getAbsolutePath() + "/" + "Vocabular");
-//                if (!sdPath.mkdirs()) Log.d(TAG, "НЕ СОЗДАНО");
-                File file = new File(getExternalFilesDir(null), "Мой словарь.csv");
-//                File file = new File(sdPath, "data.csv");
-//                File file = new File(csv);
-                if (!file.exists()) {
-                    try {
-                        // создаем объект FileWriter с файлом в качестве параметра
-                        FileWriter outputfile = new FileWriter(file);
-                        // создаем объект файлового объекта CSVWriter в качестве параметра
-                        CSVWriter writer = new CSVWriter(outputfile);
-                        // добавляем заголовок в csv
-//                        String[] header = {"Eng", "Ru", "Ln"};
-//                        writer.writeNext(header);
-                        // добавить данные в csv
-                        String[] data1 = {word1, word2, "0"};
-                        writer.writeNext(data1);
-                        // закрываем соединение с писателем
-                        writer.close();
-                        Toast toast = Toast.makeText(getApplicationContext(),
-                                "Сохранено", Toast.LENGTH_SHORT);
-                        toast.show();
-                    } catch (IOException e) {
-                        // TODO автоматически сгенерированный блок catch
-                        e.printStackTrace();
-                    }
-                } else {
-                    try {
-                        CSVWriter writer = new CSVWriter(new FileWriter(file, true));
-                        String[] record = {word1, word2, "0"};
-                        writer.writeNext(record);
-                        writer.close();
-                        Toast toast = Toast.makeText(getApplicationContext(),
-                                "Сохранено", Toast.LENGTH_SHORT);
-                        toast.show();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+                saveWord();
             }
         });
         btnFetch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideKeyboard(MainActivity.this);
-                String word1 = Text1.getText().toString();
-                String word2 = Text2.getText().toString();
-                String word_url;
-                String filter;
-                boolean L;
-                if (!word1.equals("")){
-                    word_url = "https://www.multitran.com/m.exe?l1=1&l2=2&s=" + word1;
-                    L=true;
-                    filter = "a[href$=1]";
-                }
-                else{
-                    word_url = "https://www.multitran.com/m.exe?l1=2&l2=1&s=" + word2;
-                    L=false;
-                    filter = "a[href$=2]";
-                }
-//                contentView.setText("Загрузка...");
-                new Thread(new Runnable() {
-                    public void run() {
-                        try {
-                            String content = getContent(word_url);
-//                            webView.post(new Runnable() {
-//                                public void run() {
-//                                    webView.loadDataWithBaseURL("https://www.multitran.com/m.exe?l1=1&l2=2&s=cat",content, "text/html", "UTF-8", "https://www.multitran.com/m.exe?l1=1&l2=2&s=cat");
-//                                    Toast.makeText(getApplicationContext(), "Данные загружены", Toast.LENGTH_SHORT).show();
-//                                }
-//                            });
-                            runOnUiThread(new Runnable() {
-                                public void run() {
-//                                    contentView.setText(content);
-                                    Document doc = Jsoup.parse(content);
-//                                    Elements link = doc.select("[class^=trans]");
-                                    Elements link = doc.select("[class^=trans]");
-
-//                                    contentView.setText(doc.html());
-//                                    contentView.setText(doc.title());
-//                                    String name = metaElement.attr("name");a[href*=/search/]
-//                                    String linkInnerH = link.attr("s");
-//                                    String[] linkInnerH = {};
-                                    List<String> listA = new ArrayList<String>();
-
-                                    int i = 0;
-                                    for (Element links : link.select(filter)) {
-//                                        linkInnerH = linkInnerH + links.text()+"\n";
-                                        listA.add(links.html());
-//                                        linkInnerH = linkInnerH + links.html()+"\n";
-                                        // get the value from href attribute
-//                                        System.out.println("\nLink : " + links.attr("href"));
-//                                        System.out.println("Text : " + links.text());
-                                        if (i > 20) break;
-                                        i++;
-                                    }
-                                    String[] linkInnerH = listA.toArray(new String[0]);
-//                                    String[] linkInnerH = (String[]) listA.toArray();
-//                                    String[] linkInnerH = {"fsdf", "sfsdfs"};
-//                                    String linkInnerH = link.html();
-                                    ListView lvMain = (ListView) findViewById(R.id.List);
-
-                                    // создаем адаптер
-                                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
-                                            android.R.layout.simple_list_item_1, linkInnerH);
-
-                                    // присваиваем адаптер списку
-                                    lvMain.setAdapter(adapter);
-                                    lvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                        public void onItemClick(AdapterView<?> parent, View view,
-                                                                int position, long id) {
-                                            String selectedFromList = (String) (lvMain.getItemAtPosition(position));
-                                            if (L)
-                                                Text2.setText(selectedFromList);
-                                            else
-                                                Text1.setText(selectedFromList);
-                                        }
-                                    });
-//                                    contentView.setText(linkInnerH);
-
-//                                    Log.d(TAG, content);
-                                }
-                            });
-                        } catch (IOException ex) {
-                            runOnUiThread(new Runnable() {
-                                public void run() {
-//                                    contentView.setText("Ошибка: " + ex.getMessage());
-                                    Toast.makeText(getApplicationContext(), "Ошибка", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-                    }
-                }).start();
+                translate("button");
             }
         });
     }
+
+
+    void saveWord(){
+        EditText Text1 = (EditText) findViewById(R.id.editTextTextPersonName);
+        EditText Text2 = (EditText) findViewById(R.id.editTextTextPersonName2);
+        String word1 = Text1.getText().toString();
+        String word2 = Text2.getText().toString();
+        if ((word1.equals("")) || (word2.equals(""))) return;
+        InputMethodManager imm =  (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(Text1, InputMethodManager.SHOW_IMPLICIT);
+        Text1.setText("");
+        Text2.setText("");
+        File file = new File(getExternalFilesDir(null), "Мой словарь.csv");
+        if (!file.exists()) {
+            try {
+                FileWriter outputfile = new FileWriter(file);
+                CSVWriter writer = new CSVWriter(outputfile);
+                String[] data1 = {word1, word2, "0"};
+                writer.writeNext(data1);
+                writer.close();
+                Toast toast = Toast.makeText(getApplicationContext(),
+                        "Сохранено", Toast.LENGTH_SHORT);
+                toast.show();
+            } catch (IOException e) {
+                // TODO автоматически сгенерированный блок catch
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                CSVWriter writer = new CSVWriter(new FileWriter(file, true));
+                String[] record = {word1, word2, "0"};
+                writer.writeNext(record);
+                writer.close();
+                Toast toast = Toast.makeText(getApplicationContext(),
+                        "Сохранено", Toast.LENGTH_SHORT);
+                toast.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    void translate(String but){
+        EditText Text1 = (EditText) findViewById(R.id.editTextTextPersonName);
+        EditText Text2 = (EditText) findViewById(R.id.editTextTextPersonName2);
+        hideKeyboard(MainActivity.this);
+        String word1 = Text1.getText().toString();
+        String word2 = Text2.getText().toString();
+        String word_url;
+        String filter;
+        boolean L;
+        if (but.equals("button")) {
+            if (!word1.equals("")) {
+                word_url = "https://www.multitran.com/m.exe?l1=1&l2=2&s=" + word1;
+                L = true;
+                filter = "a[href$=1]";
+            } else {
+                word_url = "https://www.multitran.com/m.exe?l1=2&l2=1&s=" + word2;
+                L = false;
+                filter = "a[href$=2]";
+            }
+        }
+        else if (but.equals("eng")) {
+                word_url = "https://www.multitran.com/m.exe?l1=1&l2=2&s=" + word1;
+                L = true;
+                filter = "a[href$=1]";
+        }
+        else {
+                word_url = "https://www.multitran.com/m.exe?l1=2&l2=1&s=" + word2;
+                L = false;
+                filter = "a[href$=2]";
+        }
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    String content = getContent(word_url);
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Document doc = Jsoup.parse(content);
+                            Elements link = doc.select("[class^=trans]");
+
+                            List<String> listA = new ArrayList<String>();
+
+                            int i = 0;
+                            for (Element links : link.select(filter)) {
+                                listA.add(links.html());
+                                if (i > 20) break;
+                                i++;
+                            }
+                            String[] linkInnerH = listA.toArray(new String[0]);
+                            ListView lvMain = (ListView) findViewById(R.id.List);
+                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
+                                    android.R.layout.simple_list_item_1, linkInnerH);
+                            lvMain.setAdapter(adapter);
+                            lvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                public void onItemClick(AdapterView<?> parent, View view,
+                                                        int position, long id) {
+                                    String selectedFromList = (String) (lvMain.getItemAtPosition(position));
+                                    if (L)
+                                        Text2.setText(selectedFromList);
+                                    else
+                                        Text1.setText(selectedFromList);
+                                }
+                            });
+                        }
+                    });
+                } catch (IOException ex) {
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Ошибка", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+
 
     private String getContent(String path) throws IOException {
         BufferedReader reader = null;
@@ -262,7 +249,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.v(TAG, "Permission is granted");
                 return true;
             } else {
-
                 Log.v(TAG, "Permission is revoked");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                 return false;
@@ -297,9 +283,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
         View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
         if (view == null) {
             view = new View(activity);
         }
