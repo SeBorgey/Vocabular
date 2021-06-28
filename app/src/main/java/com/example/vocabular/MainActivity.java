@@ -98,8 +98,8 @@ public class MainActivity extends AppCompatActivity {
                         // создаем объект файлового объекта CSVWriter в качестве параметра
                         CSVWriter writer = new CSVWriter(outputfile);
                         // добавляем заголовок в csv
-                        String[] header = {"Eng", "Ru", "Ln"};
-                        writer.writeNext(header);
+//                        String[] header = {"Eng", "Ru", "Ln"};
+//                        writer.writeNext(header);
                         // добавить данные в csv
                         String[] data1 = {word1, word2, "0"};
                         writer.writeNext(data1);
@@ -134,14 +134,17 @@ public class MainActivity extends AppCompatActivity {
                 String word1 = Text1.getText().toString();
                 String word2 = Text2.getText().toString();
                 String word_url;
+                String filter;
                 boolean L;
                 if (!word1.equals("")){
                     word_url = "https://www.multitran.com/m.exe?l1=1&l2=2&s=" + word1;
                     L=true;
+                    filter = "a[href$=1]";
                 }
                 else{
                     word_url = "https://www.multitran.com/m.exe?l1=2&l2=1&s=" + word2;
                     L=false;
+                    filter = "a[href$=2]";
                 }
 //                contentView.setText("Загрузка...");
                 new Thread(new Runnable() {
@@ -169,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
                                     List<String> listA = new ArrayList<String>();
 
                                     int i = 0;
-                                    for (Element links : link.select("a[href$=1]")) {
+                                    for (Element links : link.select(filter)) {
 //                                        linkInnerH = linkInnerH + links.text()+"\n";
                                         listA.add(links.html());
 //                                        linkInnerH = linkInnerH + links.html()+"\n";
@@ -281,7 +284,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, Learn.class);
             startActivity(intent);
         } else if (item.getTitle() == "Мой словарь") {
-            Intent intent = new Intent(this, Vocabulary.class);
+            Intent intent = new Intent(this, Vocabulary_new.class);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);

@@ -96,6 +96,7 @@ public class Vocabulary extends AppCompatActivity {
 //                android.R.layout.simple_list_item_1, catNames);
 //
 //        listView.setAdapter(adapter);
+        TableLayout table = (TableLayout) findViewById(R.id.tableLayout);
         File file = new File(getExternalFilesDir(null), "Мой словарь.csv");
         if (file.exists()) {
             try {
@@ -112,11 +113,12 @@ public class Vocabulary extends AppCompatActivity {
 //                for (String[] row : allRows) {
 //                    System.out.println(Arrays.toString(row));
 //                }
-                TableLayout table = (TableLayout) findViewById(R.id.tableLayout);
+
                 int i = 0;
                 for (String[] row : allRows) {
                     TableRow tableRow = new TableRow(this);
                     tableRow.setLayoutParams(new TableRow.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+                    tableRow.setPadding(5,5,5,5);
                     for (int j = 0; j < 3; j++) {
                         TextView textView = new TextView(this);
                         textView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
@@ -124,6 +126,7 @@ public class Vocabulary extends AppCompatActivity {
                         textView.setBackgroundResource(R.drawable.cell_shape);
                         textView.setTextColor(Color.parseColor("#000000"));
                         textView.setText(row[j]);
+                        textView.setPadding(3,3,3,3);
                         tableRow.addView(textView, j);
                     }
                     table.addView(tableRow, i);
