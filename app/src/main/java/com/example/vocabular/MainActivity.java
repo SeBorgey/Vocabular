@@ -78,11 +78,12 @@ public class MainActivity extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                InputMethodManager imm =  (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(Text1, InputMethodManager.SHOW_IMPLICIT);
 //                isStoragePermissionGranted();
                 String word1 = Text1.getText().toString();
                 String word2 = Text2.getText().toString();
+                if ((word1.equals("")) || (word2.equals(""))) return;
+                InputMethodManager imm =  (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(Text1, InputMethodManager.SHOW_IMPLICIT);
                 Text1.setText("");
                 Text2.setText("");
 //                File sdPath = Environment.getExternalStorageDirectory();

@@ -1,11 +1,13 @@
 package com.example.vocabular;
 
+import android.animation.ObjectAnimator;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -101,6 +103,7 @@ public class Learn extends AppCompatActivity {
             tableRow.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             j = k;
             c = 0;
+            tableRow.setPadding(5,5,5,5);
             while ((j >= 0) && (j <= 1)) {
                 TextView textView = new TextView(this);
                 textView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
@@ -108,6 +111,7 @@ public class Learn extends AppCompatActivity {
                 textView.setBackgroundResource(R.drawable.cell_shape);
                 textView.setTextColor(Color.parseColor("#000000"));
                 textView.setText(row[j]);
+                textView.setPadding(5,5,5,5);
                 tableRow.addView(textView, c);
                 j = j + b;
                 c++;
@@ -165,15 +169,21 @@ public class Learn extends AppCompatActivity {
 
     //нажатие на кнопку вперед
     void forwardBtnClick() {
+        ScrollView SC = (ScrollView) findViewById(R.id.scrollW);
         if (state == 0) {
             paintColomn("white");
             state++;
         } else if (state < 21) {
             paintWord(state - 1);
             state++;
+            if (state == 12){
+                ObjectAnimator.ofInt(SC, "scrollY", 1000).setDuration(1200).start();
+//                SC.fullScroll(View.FOCUS_DOWN);
+            }
         } else if (state == 21) {
             paintColomn("black");
             generateTable(sortedBuf, true);
+            SC.fullScroll(View.FOCUS_UP);
             state++;
         } else if (state == 22){
             paintColomn("white");
@@ -181,15 +191,21 @@ public class Learn extends AppCompatActivity {
         } else if (state < 43) {
             paintWord(state - 23);
             state++;
+            if (state == 34){
+                ObjectAnimator.ofInt(SC, "scrollY", 1000).setDuration(1200).start();
+            }
         } else if (state == 43) {
             upLearning();
             createNewTable();
+            SC.fullScroll(View.FOCUS_UP);
             state = 0;
         }
     }
 
     //нажатие на кнопку ошибки
     void backwardBtnClick() {
+        ScrollView SC = (ScrollView) findViewById(R.id.scrollW);
+        SC.fullScroll(View.FOCUS_UP);
         if ((state>0)&&(state<21)) {
             state = 0;
             paintColomn("black");
