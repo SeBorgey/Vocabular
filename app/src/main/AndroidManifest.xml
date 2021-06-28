@@ -12,10 +12,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Vocabular" >
-        <activity android:name=".Vocabulary_new" >
-        </activity>
-        <activity android:name=".Vocabulary" />
-        <activity android:name=".Learn" />
+        <activity android:name=".Vocabulary_new"
+            android:label="Мой словарь"/>
+        <activity android:name=".Vocabulary"
+            />
+        <activity android:name=".Learn"
+            android:label="Учить"/>
         <activity
             android:name=".MainActivity"
             android:windowSoftInputMode="adjustPan" >

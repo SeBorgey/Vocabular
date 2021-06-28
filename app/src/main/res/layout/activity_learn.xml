@@ -24,7 +24,7 @@
 
             <TableLayout
                 android:id="@+id/tableLayout1"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:shrinkColumns="*"
                 android:stretchColumns="0,1" />
@@ -33,8 +33,8 @@
 
     <Button
         android:id="@+id/forward"
-        android:layout_width="204dp"
-        android:layout_height="51dp"
+        android:layout_width="190dp"
+        android:layout_height="60dp"
         android:text="Дальше"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -45,8 +45,8 @@
 
     <Button
         android:id="@+id/backward"
-        android:layout_width="204dp"
-        android:layout_height="51dp"
+        android:layout_width="190dp"
+        android:layout_height="60dp"
         android:text="Ошибся"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
