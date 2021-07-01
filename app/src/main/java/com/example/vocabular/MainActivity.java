@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
                             int i = 0;
                             for (Element links : link.select(filter)) {
                                 listA.add(links.html());
-                                if (i > 20) break;
+                                if (i > 300) break;
                                 i++;
                             }
                             String[] linkInnerH = listA.toArray(new String[0]);

@@ -108,6 +108,7 @@ public class Learn extends AppCompatActivity {
                 textView.setTextSize(25);
                 textView.setBackgroundResource(R.drawable.cell_shape);
                 textView.setTextColor(Color.parseColor("#000000"));
+                row[j] = parseWord(row[j]);
                 textView.setText(row[j]);
                 textView.setPadding(5,5,5,5);
                 tableRow.addView(textView, c);
@@ -116,6 +117,18 @@ public class Learn extends AppCompatActivity {
             }
             table.addView(tableRow, i);
             i++;
+        }
+    }
+
+//ограничение на длину строки
+    String parseWord(String word){
+        String ret = "";
+        if (word.length()>15){
+            ret = word.replace(' ', '\n');
+            return ret;
+        }
+        else {
+            return word;
         }
     }
 
