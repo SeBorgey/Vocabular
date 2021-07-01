@@ -14,17 +14,21 @@
         android:theme="@style/Theme.Vocabular">
         <activity
             android:name=".Instruction"
-            android:label="Инструкция"/>
+            android:label="Инструкция"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Vocabulary_new"
-            android:label="Мой словарь" />
+            android:label="Мой словарь"
+            android:screenOrientation="portrait"/>
         <activity android:name=".Vocabulary" />
         <activity
             android:name=".Learn"
-            android:label="Учить" />
+            android:label="Учить"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
