@@ -24,6 +24,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
 import org.jsoup.Jsoup;
@@ -33,12 +34,14 @@ import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -269,8 +272,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getTitle() == "Учить") {
-            Intent intent = new Intent(this, Learn.class);
-            startActivity(intent);
+            checkNum();
         } else if (item.getTitle() == "Мой словарь") {
             Intent intent = new Intent(this, Vocabulary_new.class);
             startActivity(intent);
@@ -279,6 +281,35 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    void checkNum(){
+        List<String[]> vocab = new LinkedList<>();
+        File file = new File(getExternalFilesDir(null), "Мой словарь.csv");
+        if (file.exists()) {
+            try {
+                FileReader outputfile = new FileReader(file);
+                CSVReader reader = new CSVReader(outputfile);
+                vocab = reader.readAll();
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (vocab.size() > 20) {
+                Intent intent = new Intent(this, Learn.class);
+                startActivity(intent);
+            }
+            else {
+                Toast toast = Toast.makeText(getApplicationContext(),
+                        "Чтобы учить, сохраните 20 слов", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }
+        else {
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "Чтобы учить, сохраните 20 слов", Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 
     public static void hideKeyboard(Activity activity) {
