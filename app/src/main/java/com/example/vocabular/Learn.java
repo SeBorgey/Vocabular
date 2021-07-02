@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -69,6 +70,7 @@ public class Learn extends AppCompatActivity {
                 reader.close();
                 vocab = allRows;
                 List<String[]> sortedWords = sort(allRows);
+                Collections.shuffle(sortedWords);
                 sortedBuf = sortedWords;
 //                for (String[] row : allRows) {
 //                    System.out.println(Arrays.toString(row));
