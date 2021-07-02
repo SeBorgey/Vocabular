@@ -110,8 +110,8 @@ public class Learn extends AppCompatActivity {
                 textView.setTextSize(25);
                 textView.setBackgroundResource(R.drawable.cell_shape);
                 textView.setTextColor(Color.parseColor("#000000"));
-                row[j] = parseWord(row[j]);
-                textView.setText(row[j]);
+                String parsedWord = parseWord(row[j]);
+                textView.setText(parsedWord);
                 textView.setPadding(5,5,5,5);
                 tableRow.addView(textView, c);
                 j = j + b;
