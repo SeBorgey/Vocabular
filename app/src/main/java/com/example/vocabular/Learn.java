@@ -29,7 +29,7 @@ public class Learn extends AppCompatActivity {
     List<String[]> vocab = new LinkedList<>();
     List<String[]> sortedBuf = new LinkedList<>();
     int state = 0;
-
+    boolean down = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,8 +69,8 @@ public class Learn extends AppCompatActivity {
                 List<String[]> allRows = reader.readAll();
                 reader.close();
                 vocab = allRows;
+                Collections.shuffle(vocab);
                 List<String[]> sortedWords = sort(allRows);
-                Collections.shuffle(sortedWords);
                 sortedBuf = sortedWords;
 //                for (String[] row : allRows) {
 //                    System.out.println(Arrays.toString(row));
@@ -103,7 +103,7 @@ public class Learn extends AppCompatActivity {
             tableRow.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             j = k;
             c = 0;
-            tableRow.setPadding(5,5,5,5);
+            tableRow.setPadding(5, 5, 5, 5);
             while ((j >= 0) && (j <= 1)) {
                 TextView textView = new TextView(this);
                 textView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
@@ -112,7 +112,7 @@ public class Learn extends AppCompatActivity {
                 textView.setTextColor(Color.parseColor("#000000"));
                 String parsedWord = parseWord(row[j]);
                 textView.setText(parsedWord);
-                textView.setPadding(5,5,5,5);
+                textView.setPadding(5, 5, 5, 5);
                 tableRow.addView(textView, c);
                 j = j + b;
                 c++;
@@ -122,14 +122,13 @@ public class Learn extends AppCompatActivity {
         }
     }
 
-//ограничение на длину строки
-    String parseWord(String word){
+    //ограничение на длину строки
+    String parseWord(String word) {
         String ret = "";
-        if (word.length()>15){
+        if (word.length() > 15) {
             ret = word.replace(' ', '\n');
             return ret;
-        }
-        else {
+        } else {
             return word;
         }
     }
@@ -184,47 +183,94 @@ public class Learn extends AppCompatActivity {
     void forwardBtnClick() {
         ScrollView SC = (ScrollView) findViewById(R.id.scrollW);
         if (state == 0) {
-            paintColomn("white");
-            state++;
-        } else if (state < 21) {
-            paintWord(state - 1);
-            state++;
-            if (state == 12){
+            if (!down) {
                 ObjectAnimator.ofInt(SC, "scrollY", 1000).setDuration(1200).start();
-//                SC.fullScroll(View.FOCUS_DOWN);
+                down = true;
+                state++;
             }
-        } else if (state == 21) {
+            else {
+                paintColomn("white");
+                if(down) {
+                    SC.fullScroll(View.FOCUS_UP);
+                    down = false;
+                }
+                state+=2;
+            }
+        } else if (state == 1) {
+            paintColomn("white");
+            if (down) {
+                SC.fullScroll(View.FOCUS_UP);
+                down = false;
+            }
+            state++;
+        } else if (state < 22) {
+            paintWord(state - 2);
+            state++;
+            if (state == 13) {
+                if (!down) {
+                    ObjectAnimator.ofInt(SC, "scrollY", 1000).setDuration(1200).start();
+                    down = true;
+                }
+            }
+        } else if (state == 22) {
             paintColomn("black");
             generateTable(sortedBuf, true);
-            SC.fullScroll(View.FOCUS_UP);
-            state++;
-        } else if (state == 22){
-            paintColomn("white");
-            state++;
-        } else if (state < 43) {
-            paintWord(state - 23);
-            state++;
-            if (state == 34){
-                ObjectAnimator.ofInt(SC, "scrollY", 1000).setDuration(1200).start();
+            if (down) {
+                SC.fullScroll(View.FOCUS_UP);
+                down = false;
             }
-        } else if (state == 43) {
+            state++;
+        } else if (state == 23) {
+            if (!down) {
+                ObjectAnimator.ofInt(SC, "scrollY", 1000).setDuration(1200).start();
+                down = true;
+                state++;
+            }
+            else
+            {
+                paintColomn("white");
+                if (down) {
+                    SC.fullScroll(View.FOCUS_UP);
+                    down = false;
+                }
+                state+=2;
+            }
+        } else if (state == 24) {
+            paintColomn("white");
+            if (down) {
+                SC.fullScroll(View.FOCUS_UP);
+                down = false;
+            }
+            state++;
+        } else if (state < 45) {
+            paintWord(state - 25);
+            state++;
+            if (state == 36) {
+                if (!down) {
+                    ObjectAnimator.ofInt(SC, "scrollY", 1000).setDuration(1200).start();
+                    down = true;
+                }
+            }
+        } else if (state == 45) {
             upLearning();
             createNewTable();
-            SC.fullScroll(View.FOCUS_UP);
+            if (down) {
+                SC.fullScroll(View.FOCUS_UP);
+                down = false;
+            }
             state = 0;
         }
     }
 
     //нажатие на кнопку ошибки
     void backwardBtnClick() {
-        ScrollView SC = (ScrollView) findViewById(R.id.scrollW);
-        SC.fullScroll(View.FOCUS_UP);
-        if ((state>0)&&(state<21)) {
+//        ScrollView SC = (ScrollView) findViewById(R.id.scrollW);
+//        SC.fullScroll(View.FOCUS_UP);
+        if ((state > 1) && (state < 23)) {
             state = 0;
             paintColomn("black");
-        }
-        else if ((state>22)&&(state<43)){
-            state = 22;
+        } else if ((state > 23) && (state < 46)) {
+            state = 23;
             paintColomn("black");
         }
     }

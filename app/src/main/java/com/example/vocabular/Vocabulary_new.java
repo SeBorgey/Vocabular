@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -67,6 +68,9 @@ public class Vocabulary_new extends AppCompatActivity {
         System.out.println(info.position);
         upVocab(info.position);
         createListView();
+        Toast toast = Toast.makeText(getApplicationContext(),
+                "Удалено", Toast.LENGTH_SHORT);
+        toast.show();
         return super.onContextItemSelected(item);
     }
 
