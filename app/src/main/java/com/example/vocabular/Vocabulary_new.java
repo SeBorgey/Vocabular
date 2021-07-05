@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,6 +39,13 @@ public class Vocabulary_new extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            Collections.sort(vocab, new Comparator<String[]>() {
+                @Override
+                public int compare(String[] arr1, String[] arr2) {
+                    return arr1[0].compareTo(arr2[0]);
+                }
+            });
+            upVocab();
             createListView();
         }
 
@@ -74,6 +83,19 @@ public class Vocabulary_new extends AppCompatActivity {
         return super.onContextItemSelected(item);
     }
 
+    void upVocab(){
+        File file = new File(getExternalFilesDir(null), "Мой словарь.csv");
+        if (file.exists()) {
+            try {
+                FileWriter outputfile = new FileWriter(file);
+                CSVWriter writer = new CSVWriter(outputfile);
+                writer.writeAll(vocab);
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     void upVocab(int index) {
         vocab.remove(index);
